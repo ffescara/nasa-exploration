@@ -1,13 +1,11 @@
 version: "3.7"
 services:
-  postgres:
-    image: postgres:latest
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
+  app:
+    build: .
     ports:
-      - "5432:5432"
+      - "3000:3000"
+    env_file:
+      - .env
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - .:/app
+    command: yarn start

@@ -1,0 +1,73 @@
+/* app/styles/story.css */
+.story-scene {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.scene-background {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.character-container {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.character-card {
+  position: relative;
+  max-width: 150px;
+  text-align: center;
+  margin-bottom: 150px;
+  margin-inline: auto;
+}
+
+.character-card img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.dialogue-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* semi-transparent background */
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.dialogue-overlay h4 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.dialogue-overlay p {
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.next-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.next-button:hover {
+  background-color: #0056b3;
+}

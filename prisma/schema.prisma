@@ -1,5 +1,5 @@
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb" // or "postgresql" depending on your DB preference
   url      = env("DATABASE_URL")
 }
 
@@ -7,32 +7,84 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// User model to represent both Teachers and Students
 model User {
-  id    String @id @default(cuid())
-  email String @unique
-
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  stories   Story[]  @relation("StoryCreator") // Stories created by the user
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  password Password?
-  notes    Note[]
 }
 
-model Password {
-  hash String
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @unique
+enum Role {
+  TEACHER
+  STUDENT
 }
 
-model Note {
-  id    String @id @default(cuid())
-  title String
-  body  String
-
+// Story model, each story can have multiple scenes
+model Story {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  creator   User     @relation("StoryCreator", fields: [creatorId], references: [id])
+  creatorId String   @db.ObjectId
+  scenes    Json // Menyimpan JSON yang berisi scenes
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Scene     Scene[]
+}
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String
+// Scene model, can be either a Conversation or a Quiz
+model Scene {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  story      Story       @relation(fields: [storyId], references: [id])
+  storyId    String      @db.ObjectId
+  type       SceneType
+  background String? // optional background for the scene
+  characters Character[] // only for Conversation scenes
+  dialogues  Dialogue[] // only for Conversation scenes
+  quiz       Quiz[] // only for Quiz scenes
+}
+
+enum SceneType {
+  CONVERSATION
+  QUIZ
+}
+
+// Character model for Conversation scenes
+model Character {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  image   String // URL to the character's image
+  role    String // Role in the conversation (e.g., protagonist, antagonist)
+  scene   Scene  @relation(fields: [sceneId], references: [id])
+  sceneId String @db.ObjectId
+}
+
+// Dialogue model for conversations
+model Dialogue {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  text    String
+  image   String? // Optional image (e.g., expressions)
+  scene   Scene   @relation(fields: [sceneId], references: [id])
+  sceneId String  @db.ObjectId
+}
+
+// Quiz model for Quiz scenes
+model Quiz {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  questions Question[] // Multiple questions in one quiz
+  scene     Scene      @relation(fields: [sceneId], references: [id])
+  sceneId   String     @db.ObjectId
+}
+
+// Question model for the quiz
+model Question {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  question      String // Question text
+  options       String[] // List of options
+  correctAnswer String // Correct answer
+  quiz          Quiz     @relation(fields: [quizId], references: [id])
+  quizId        String   @db.ObjectId
 }

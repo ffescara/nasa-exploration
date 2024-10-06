@@ -19,11 +19,7 @@ export async function createUser(email: User["email"], password: string) {
   return prisma.user.create({
     data: {
       email,
-      password: {
-        create: {
-          hash: hashedPassword,
-        },
-      },
+      password: hashedPassword,
     },
   });
 }
@@ -38,9 +34,6 @@ export async function verifyLogin(
 ) {
   const userWithPassword = await prisma.user.findUnique({
     where: { email },
-    include: {
-      password: true,
-    },
   });
 
   if (!userWithPassword || !userWithPassword.password) {
